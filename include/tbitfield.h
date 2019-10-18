@@ -78,9 +78,93 @@ public:
 		}
 
 	}; // присваивание              (#П3)
-	TBitField  operator|(const TBitField& bf) {}; // операция "или"            (#О6)
-	TBitField  operator&(const TBitField& bf) {}; // операция "и"              (#Л2)
-	TBitField  operator~(void) {};                // отрицание                  (#С)
+	TBitField  operator|(const TBitField& b) {
+		int maxBitlen = b.BitLen;
+		if (BitLen > b.BitLen)
+		{
+			maxBitlen = BitLen;
+		}
+		TBitField temp(maxBitlen);
+		if (BitLen < b.BitLen)
+		{
+			for (int i = 0; i < MemLen - 1; i++)
+			{
+				temp.pMem[i] = pMem[i];
+			}
+			for (int i = (MemLen - 1) * 32; i < BitLen; i++)
+			{
+				if (GetBit(i))temp.SetBit(i);
+			}
+			for (int i = 0; i < temp.MemLen; i++)
+			{
+				temp.pMem[i] = temp.pMem[i] | b.pMem[i];
+			}
+		}
+		else
+		{
+			for (int i = 0; i < b.MemLen - 1; i++)
+			{
+				temp.pMem[i] = b.pMem[i];
+			}
+			for (int i = (b.MemLen - 1) * 32; i < b.BitLen; i++)
+			{
+				if (b.GetBit(i))temp.SetBit(i);
+			}
+			for (int i = 0; i < temp.MemLen; i++)
+			{
+				temp.pMem[i] = temp.pMem[i] | b.pMem[i];
+			}
+		}
+		return temp;
+	}; // операция "или"            (#О6)
+	TBitField  operator&(const TBitField& b) {
+		int maxBitlen = b.BitLen;
+		if (BitLen > b.BitLen)
+		{
+			maxBitlen = BitLen;
+		}
+		TBitField temp(maxBitlen);
+		if (BitLen < b.BitLen)
+		{
+			for (int i = 0; i < MemLen - 1; i++)
+			{
+				temp.pMem[i] = pMem[i];
+			}
+			for (int i = (MemLen - 1) * 32; i < BitLen; i++)
+			{
+				if (GetBit(i))temp.SetBit(i);
+			}
+			for (int i = 0; i <temp.MemLen; i++)
+			{
+				temp.pMem[i] = temp.pMem[i] & b.pMem[i];
+			}
+		}
+		else
+		{
+			for (int i = 0; i < b.MemLen - 1; i++)
+			{
+				temp.pMem[i] = b.pMem[i];
+			}
+			for (int i = (b.MemLen - 1) * 32; i < b.BitLen; i++)
+			{
+				if (b.GetBit(i))temp.SetBit(i);
+			}
+			for (int i = 0; i < temp.MemLen; i++)
+			{
+				temp.pMem[i] = temp.pMem[i] & b.pMem[i];
+			}
+		}
+		return temp;
+
+	}; // операция "и"              (#Л2)
+	TBitField  operator~(void) {
+		TBitField b(BitLen);
+		for (int i = 0; i < MemLen; i++)
+		{
+			b.pMem[i] = ~pMem[i];
+		}
+		return b;
+	};                // отрицание                  (#С)
 
   friend istream& operator>>(istream& istr, TBitField& bf) {};       //      (#О7)
   friend ostream& operator<<(ostream& ostr, const TBitField& bf) {}; //      (#П4)
