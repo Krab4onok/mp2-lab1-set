@@ -21,13 +21,19 @@ public:
 		MaxPower = mp;
 	};
 	TSet(const TSet& s) :BitField(s.BitField), MaxPower(s.MaxPower) {};       // конструктор копирования
-  TSet(const TBitField &bf); // конструктор преобразования типа
-  operator TBitField();      // преобразование типа к битовому полю
+  TSet(const TBitField &bf) :BitField(s.BitField), MaxPower(s.MaxPower) {}; // конструктор преобразования типа
+  operator TBitField()
+  {
+	  return BitField;
+  };      // преобразование типа к битовому полю
   // доступ к битам
   int GetMaxPower(void) const;     // максимальная мощность множества
   void InsElem(const int Elem);       // включить элемент в множество
   void DelElem(const int Elem);       // удалить элемент из множества
-  int IsMember(const int Elem) const; // проверить наличие элемента в множестве
+  int IsMember(const int a) const
+  {
+	  return BitField.GetBit(a);
+  }; // проверить наличие элемента в множестве
   // теоретико-множественные операции
   int operator== (const TSet &s) const; // сравнение
   int operator!= (const TSet &s) const; // сравнение
@@ -36,7 +42,10 @@ public:
                                    // элемент должен быть из того же универса
   TSet operator- (const int Elem); // разность с элементом
                                    // элемент должен быть из того же универса
-  TSet operator+ (const TSet &s);  // объединение
+  TSet operator+ (const TSet& s)
+  {
+	  TBitField temp;
+  };  // объединение
   TSet operator* (const TSet &s);  // пересечение
   TSet operator~ (void);           // дополнение
 

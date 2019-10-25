@@ -33,12 +33,18 @@ private:
 public:
 	TBitField(int len = 15)
 	{
-		BitLen = len;
-		MemLen = ((len) / 32) + 1;
-		pMem = new TELEM[MemLen];
-		for (int i = 0; i < MemLen; i++)
+		if(len<0)
 		{
-			pMem[i] = 0;
+			throw 1;
+		}
+		else {
+			BitLen = len;
+			MemLen = ((len) / 8 * sizeof(TELEM)) + 1;
+			pMem = new TELEM[MemLen];
+			for (int i = 0; i < MemLen; i++)
+			{
+				pMem[i] = 0;
+			}
 		}
 
 	};                //                                   (#О1)
@@ -57,16 +63,86 @@ public:
 
   // доступ к битам
 	int GetLength(void) const { return BitLen; };      // получить длину (к-во битов)           (#О)
-	void SetBit(const int n) {};       // установить бит                       (#О4)
-	void ClrBit(const int n) {};       // очистить бит                         (#П2)
+	void SetBit(const int n) 
+	{
+		if (n<0 || n>MemLen)
+		{
+			throw 1;
+		}
+		else {
+			int i = GetMemIndex(n);
+			TELEM mask = GetMemMask(n);
+			pMem[i] = pMem[i] | mask;
+		}
+	};       // установить бит                       (#О4)
+	void ClrBit(const int n) {
+		if (n<0 || n>MemLen)
+		{
+			throw 1;
+		}
+		else {
+			int i = GetMemIndex(n);
+			TELEM mask = GetMemMask(n);
+			mask = ~mask;
+			pMem[i] &= mask;
+		}
+	};       // очистить бит                         (#П2)
 	TELEM  GetBit(const int n) const
 	{
-		return pMem[n / 32];
+		if (n<0 || n>MemLen)
+		{
+			throw 1;
+		}
+		else {
+			int i = GetMemIndex(n);
+			TELEM mask = GetMemMask(n);
+			return pMem[i] & mask;
+		}
 	}; // получить значение бита               (#Л1)
 
   // битовые операции
-	int operator==(const TBitField& bf) const { return 1; }; // сравнение                 (#О5)
-	int operator!=(const TBitField& bf) const { return 1; }; // сравнение
+	bool operator==(const TBitField& a) const {
+		if (BitLen != a.BitLen)
+		{
+			return false;
+		}
+		for (int i = 0; i < MemLen - 1; i++)
+		{
+			if (pMem[i] != a.pMem[i])
+			{
+				return false;
+			}
+		}
+		for (int i = (MemLen - 1) * 32; i < BitLen; i++)
+		{
+			if (GetBit(i) != a.GetBit(i))
+			{
+				return false;
+			}
+			return true;
+		}
+	}; // сравнение                 (#О5)
+	bool operator!=(const TBitField& a) const {
+		if (BitLen != a.BitLen)
+		{
+			return true;
+		}
+		for (int i = 0; i < MemLen - 1; i++)
+		{
+			if (pMem[i] != a.pMem[i])
+			{
+				return true;
+			}
+		}
+		for (int i = (MemLen - 1) * 32; i < BitLen; i++)
+		{
+			if( GetBit(i) != a.GetBit(i))
+			{
+				return true;
+			}
+			return false;
+		}
+	}; // сравнение
 	TBitField& operator=(const TBitField& a)
 	{
 		BitLen = a.BitLen;
@@ -166,8 +242,37 @@ public:
 		return b;
 	};                // отрицание                  (#С)
 
-	friend istream& operator>>(istream& istr, TBitField& bf) { return istr; };      //      (#О7)
-	friend ostream& operator<<(ostream& ostr, const TBitField& bf) { return ostr; }; //      (#П4)
+	friend istream& operator>>(istream& is, TBitField& a) {
+		char c;
+		int i = 0;
+		do {
+			is >> c;
+			if (c == '1')
+			{
+				a.SetBit(i);
+				i++;
+			}
+			if (c == '0')
+			{
+				a.ClrBit(i);
+				i++;
+			}
+		} while ((c == '0') || (c == '1'));
+		return is; };      //      (#О7)
+	friend ostream& operator<<(ostream& ostr, const TBitField& a) { 
+		for (int i = 0; i < a.BitLen; i++)
+		{
+			if (a.GetBit(i) != 0)
+			{
+				ostr << 1;
+			}
+			else
+			{
+				ostr << 0;
+			}
+		}
+		
+		return ostr; }; //      (#П4)
 };
 // Структура хранения битового поля
 //   бит.поле - набор битов с номерами от 0 до BitLen
