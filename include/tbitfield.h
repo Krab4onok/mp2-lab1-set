@@ -22,24 +22,42 @@ private:
 	int  MemLen; // к-во эл-тов Мем для представления бит.поля
 
 	// методы реализации
-	int   GetMemIndex(const int n) const { return n / 32; }; // индекс в pМем для бита n       (#О2)
+	int   GetMemIndex(const int n) const
+	{
+		if (n >= 0 && n <= BitLen )
+		{
+			return n / 32;
+		}
+		else
+		{
+			throw 1;
+		}
+	}; // индекс в pМем для бита n       (#О2)
 	TELEM GetMemMask(const int n) const {
-		int v;
-		v = n % 32;
-		TELEM tmp = 1;
-		tmp = tmp << v;
-		return tmp;
+		if (n >= 0 && n <= BitLen)
+		{
+			int v;
+			v = n % 32;
+			TELEM tmp = 1;
+			tmp = tmp << v ;
+			return tmp;
+		}
+		else
+			throw 1;
 	}; // битовая маска для бита n       (#О3)
 public:
 	TBitField(int len = 15)
 	{
-		if(len<0)
+		if(len<=0)
 		{
 			throw 1;
 		}
 		else {
 			BitLen = len;
-			MemLen = ((len) / 8 * sizeof(TELEM)) + 1;
+			if(BitLen % 32 != 0) 
+				MemLen = BitLen / 32 + 1;
+			else
+				MemLen = BitLen / 32;
 			pMem = new TELEM[MemLen];
 			for (int i = 0; i < MemLen; i++)
 			{
@@ -65,7 +83,7 @@ public:
 	int GetLength(void) const { return BitLen; };      // получить длину (к-во битов)           (#О)
 	void SetBit(const int n) 
 	{
-		if (n<0 || n>MemLen)
+		if (n<0 || n>BitLen)
 		{
 			throw 1;
 		}
@@ -76,7 +94,7 @@ public:
 		}
 	};       // установить бит                       (#О4)
 	void ClrBit(const int n) {
-		if (n<0 || n>MemLen)
+		if (n<0 || n>BitLen)
 		{
 			throw 1;
 		}
@@ -89,14 +107,14 @@ public:
 	};       // очистить бит                         (#П2)
 	TELEM  GetBit(const int n) const
 	{
-		if (n<0 || n>MemLen)
+		if (n<0 || n>= BitLen)
 		{
 			throw 1;
 		}
 		else {
 			int i = GetMemIndex(n);
 			TELEM mask = GetMemMask(n);
-			return pMem[i] & mask;
+			return(pMem[i] & mask);
 		}
 	}; // получить значение бита               (#Л1)
 

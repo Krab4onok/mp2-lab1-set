@@ -33,11 +33,17 @@ public:
 	};     // максимальная мощность множества
 	void InsElem(const int &a)
 	{
-		BitField.SetBit(a);
+		if (a >= 0)
+			BitField.SetBit(a);
+		else
+			throw 1;
 	};       // включить элемент в множество
 	void DelElem(const int &a)
 	{
-		BitField.ClrBit(a);
+		if (a >= 0)
+			BitField.ClrBit(a);
+		else
+			throw 1;
 	};       // удалить элемент из множества
 	int IsMember(const int &a)const
 	{
@@ -60,16 +66,24 @@ public:
 	};  // присваивание
 	TSet operator+ (const int &a)
 	{
-		TSet res(*this);
-		res.InsElem(a);
-		return res;
+		if (a >= 0 && a <= MaxPower) {
+			TSet res(*this);
+			res.InsElem(a);
+			return res;
+		}
+		else
+			throw 1;
 	}; // объединение с элементом
 									 // элемент должен быть из того же универса
 	TSet operator- (const int &a) // разность с элементом
 	{
-		TSet res(*this);
-		res.DelElem(a);
-		return res;
+		if (a >= 0 && a<= MaxPower) {
+			TSet res(*this);
+			res.DelElem(a);
+			return res;
+		}
+		else
+			throw 1;
 	};                        // элемент должен быть из того же универса
 	TSet operator+ (const TSet& a)
 	{
