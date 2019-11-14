@@ -120,10 +120,10 @@ public:
 
   // битовые операции
 	bool operator==(const TBitField& a) const {
-		if (BitLen != a.BitLen)
+		/*if (BitLen != a.BitLen)
 		{
 			return false;
-		}
+		}*/
 		for (int i = 0; i < MemLen - 1; i++)
 		{
 			if (pMem[i] != a.pMem[i])
@@ -139,6 +139,7 @@ public:
 			}
 			return true;
 		}
+		return true;
 	}; // сравнение                 (#О5)
 	bool operator!=(const TBitField& a) const {
 		if (BitLen != a.BitLen)
@@ -154,12 +155,13 @@ public:
 		}
 		for (int i = (MemLen - 1) * 32; i < BitLen; i++)
 		{
-			if( GetBit(i) != a.GetBit(i))
+			if (GetBit(i) != a.GetBit(i))
 			{
 				return true;
 			}
-			return false;
+
 		}
+		return false;
 	}; // сравнение
 	TBitField& operator=(const TBitField& a)
 	{
@@ -206,7 +208,7 @@ public:
 			}
 			for (int i = 0; i < temp.MemLen; i++)
 			{
-				temp.pMem[i] = temp.pMem[i] | b.pMem[i];
+				temp.pMem[i] = temp.pMem[i] | pMem[i];
 			}
 		}
 		return temp;
@@ -245,7 +247,7 @@ public:
 			}
 			for (int i = 0; i < temp.MemLen; i++)
 			{
-				temp.pMem[i] = temp.pMem[i] & b.pMem[i];
+				temp.pMem[i] = temp.pMem[i] & pMem[i];
 			}
 		}
 		return temp;
